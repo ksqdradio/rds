@@ -23,6 +23,15 @@ except sqlalchemy.exc.OperationalError:
 
 print(dpsstr)
 
-tn = telnetlib.Telnet("192.168.0.248", port=10001, timeout=10)
+with open("ipaddress") as f:
+    ip = f.read().strip()
+
+tn = telnetlib.Telnet(ip, port=10001, timeout=10)
 tn.write(f"DPS={dpsstr}\r\n".encode("utf-8"))
+try:
+    response = tn.read_until(b"OK", timeout=10)
+except EOFError as e:
+    print(f"Connection closed: {e}")
+
+print(response)
 tn.close()
